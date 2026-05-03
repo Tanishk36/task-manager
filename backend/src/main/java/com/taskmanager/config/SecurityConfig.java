@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/api/**").permitAll()
+                       .requestMatchers("/", "/api/**", "/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -72,10 +72,13 @@ public class SecurityConfig {
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
 
-    config.setAllowedOriginPatterns(Arrays.asList("*"));  // allow all
+    config.setAllowedOrigins(Arrays.asList(
+        "https://aware-enjoyment-production-0bef.up.railway.app"
+    ));
+
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(Arrays.asList("*"));
-    config.setAllowCredentials(false); // IMPORTANT
+    config.setAllowCredentials(true); // IMPORTANT
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
