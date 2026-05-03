@@ -6,6 +6,9 @@ import com.taskmanager.entity.User;
 import com.taskmanager.repository.ProjectRepository;
 import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 @Component
+@Transactional
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
@@ -26,10 +30,13 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired private PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) {
-        if (userRepository.count() > 0) {
-            return;
-        }
+   public void run(String... args) {
+    logger.info("🔥 DataSeeder STARTED");
+
+    if (userRepository.count() > 0) {
+        logger.info("⚠️ Users already exist, skipping seeding");
+        return;
+    }
 
         User admin = userRepository.save(User.builder()
                 .fullName("Admin User")

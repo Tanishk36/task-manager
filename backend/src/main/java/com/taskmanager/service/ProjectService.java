@@ -43,7 +43,7 @@ public class ProjectService {
 
     // ================= GET ALL =================
     public List<ProjectDto> getAllProjects() {
-        List<Project> projects = projectRepository.findAll();
+        List<Project> projects = projectRepository.getAllProjects();
 
         return projects.stream()
                 .map(this::toDto)
