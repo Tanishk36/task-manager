@@ -31,16 +31,33 @@ public class DTOs {
         private User.Role role = User.Role.MEMBER;
     }
 
-    @Data @NoArgsConstructor @AllArgsConstructor
     public static class LoginRequest {
-        @NotBlank(message = "Email is required")
-        @Email(message = "Please provide a valid email address")
-        private String email;
 
-        @NotBlank(message = "Password is required")
-        private String password;
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    public LoginRequest() {}   // ✅ only one constructor
+
+    public String getEmail() {
+        return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
     @Data @NoArgsConstructor @AllArgsConstructor @Builder
     public static class AuthResponse {
         private String token;
