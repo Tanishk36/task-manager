@@ -9,11 +9,13 @@ import com.taskmanager.repository.ProjectRepository;
 import com.taskmanager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // ✅ IMPORT
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional // ✅ FIX: keeps Hibernate session open for all methods
 public class ProjectService {
 
     @Autowired private ProjectRepository projectRepository;
@@ -61,12 +63,11 @@ public class ProjectService {
                 .name(project.getName())
                 .description(project.getDescription())
                 .createdAt(project.getCreatedAt())
-                .createdBy(toUserDto(project.getCreatedBy()))
+                .createdBy(toUserDto(project.getCreatedBy())) // ✅ safe inside @Transactional
                 .taskCount(0)
                 .build();
     }
 
-    // ✅ Added missing helper — was referenced but never defined
     private UserDto toUserDto(User user) {
         if (user == null) return null;
         return UserDto.builder()

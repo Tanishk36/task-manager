@@ -13,12 +13,14 @@ import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // ✅ IMPORT
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional // ✅ FIX: keeps Hibernate session open for all methods
 public class TaskService {
 
     @Autowired private TaskRepository taskRepository;
@@ -85,18 +87,10 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
-        if (request.getTitle() != null) {
-            task.setTitle(request.getTitle());
-        }
-        if (request.getDescription() != null) {
-            task.setDescription(request.getDescription());
-        }
-        if (request.getDueDate() != null) {
-            task.setDueDate(request.getDueDate());
-        }
-        if (request.getPriority() != null) {
-            task.setPriority(request.getPriority());
-        }
+        if (request.getTitle() != null) task.setTitle(request.getTitle());
+        if (request.getDescription() != null) task.setDescription(request.getDescription());
+        if (request.getDueDate() != null) task.setDueDate(request.getDueDate());
+        if (request.getPriority() != null) task.setPriority(request.getPriority());
 
         if (request.getAssignedToId() != null) {
             User assignee = userRepository.findById(request.getAssignedToId())
@@ -148,7 +142,8 @@ public class TaskService {
                 .dueDate(task.getDueDate())
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
-                .overdue(task.getDueDate().isBefore(LocalDate.now()) && task.getStatus() != Task.Status.COMPLETED)
+                .overdue(task.getDueDate().isBefore(LocalDate.now())
+                        && task.getStatus() != Task.Status.COMPLETED)
                 .project(task.getProject() != null ? ProjectDto.builder()
                         .id(task.getProject().getId())
                         .name(task.getProject().getName())
