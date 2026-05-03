@@ -1,7 +1,7 @@
 import axios from 'axios';
-const API_BASE = 'https://taskmanger-production-c594.up.railway.app';
+const API_URL = "https://task-manager-production-efb1.up.railway.app";
 const api = axios.create({
-  baseURL: `${API_BASE}/api`,
+  baseURL: `${API_URL}/api`,
   headers: { 'Content-Type': 'application/json' },
 });
 
