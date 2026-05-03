@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "projects")
 @Data
@@ -49,9 +51,11 @@ public class Project {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    
+
     // ✅ FIX: changed LAZY → EAGER
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    
     private List<Task> tasks;
 
     @PrePersist
