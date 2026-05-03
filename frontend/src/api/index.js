@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_BASE = 'http://localhost:8080';
+const API_BASE = 'https://taskmanger-production-c594.up.railway.app';
 const api = axios.create({
   baseURL: `${API_BASE}/api`,
   headers: { 'Content-Type': 'application/json' },
