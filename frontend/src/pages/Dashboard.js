@@ -18,9 +18,17 @@ export default function Dashboard() {
           isAdmin ? getAllTasks() : getMyTasks()
         ]);
         setStats(statsRes.data);
-        setTasks(tasksRes.data.slice(0, 5));
-      } catch (err) { console.error(err); }
-      finally { setLoading(false); }
+
+        // ✅ FIX: ensure tasksRes.data is always an array before calling .slice()
+        const taskData = Array.isArray(tasksRes.data) ? tasksRes.data : [];
+        setTasks(taskData.slice(0, 5));
+
+      } catch (err) {
+        console.error(err);
+        setTasks([]); // ✅ FIX: reset to empty array on error so .map() never fails
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [isAdmin]);
