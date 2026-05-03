@@ -1,10 +1,15 @@
 package com.taskmanager.service;
 
-import com.taskmanager.dto.DTOs.*;
-import com.taskmanager.entity.*;
-import com.taskmanager.repository.*;
+import com.taskmanager.dto.DTOs.ProjectDto;
+import com.taskmanager.dto.DTOs.ProjectRequest;
+import com.taskmanager.dto.DTOs.UserDto;
+import com.taskmanager.entity.Project;
+import com.taskmanager.entity.User;
+import com.taskmanager.repository.ProjectRepository;
+import com.taskmanager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,21 +29,13 @@ public class ProjectService {
                 .createdBy(creator)
                 .build();
 
-
-                 System.out.println("🚀 Creating Project...");
-    System.out.println("Before setCreatedAt: " + project.getCreatedAt());
-
-    project.setCreatedAt(java.time.LocalDateTime.now());
-
-    System.out.println("After setCreatedAt: " + project.getCreatedAt());
-
-    System.out.println("🔥 Saving project...");
-
         return toDto(projectRepository.save(project));
     }
 
     public List<ProjectDto> getAllProjects() {
-        return projectRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+        return projectRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public ProjectDto getProject(Long id) {

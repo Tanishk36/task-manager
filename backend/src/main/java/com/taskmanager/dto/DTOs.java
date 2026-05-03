@@ -40,7 +40,7 @@ public class DTOs {
     @NotBlank(message = "Password is required")
     private String password;
 
-    public LoginRequest() {}   // ✅ only one constructor
+    public LoginRequest() {}
 
     public String getEmail() {
         return email;
@@ -61,6 +61,7 @@ public class DTOs {
     @Data @NoArgsConstructor @AllArgsConstructor @Builder
     public static class AuthResponse {
         private String token;
+        @Builder.Default
         private String type = "Bearer";
         private Long id;
         private String fullName;
