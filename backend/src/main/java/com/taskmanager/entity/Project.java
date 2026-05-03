@@ -49,7 +49,8 @@ public class Project {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // ✅ FIX: changed LAZY → EAGER
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Task> tasks;
 
     @PrePersist
