@@ -6,7 +6,7 @@ import { validators, validateForm } from '../utils/validators';
 const STATUS_OPTIONS = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
 const PRIORITY_OPTIONS = ['LOW', 'MEDIUM', 'HIGH'];
 
-const Badge = ({ val, type }) => <span className={`badge badge-${val.toLowerCase().replace(/ /g, '_')}`}>{val.replace('_', ' ')}</span>;
+const Badge = ({ val }) => <span className={`badge badge-${val.toLowerCase().replace(/ /g, '_')}`}>{val.replace('_', ' ')}</span>;
 
 function TaskModal({ task, projects, users, onClose, onSave }) {
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
@@ -42,7 +42,11 @@ function TaskModal({ task, projects, users, onClose, onSave }) {
     if (!valid) { setErrors(errs); return; }
     setSaving(true); setApiError('');
     try {
-      const payload = { ...form, projectId: Number(form.projectId), assignedToId: form.assignedToId ? Number(form.assignedToId) : null };
+      const payload = {
+        ...form,
+        projectId: Number(form.projectId),
+        assignedToId: form.assignedToId ? Number(form.assignedToId) : null
+      };
       if (task) await updateTask(task.id, payload);
       else await createTask(payload);
       onSave();
@@ -76,7 +80,7 @@ function TaskModal({ task, projects, users, onClose, onSave }) {
               <label className="form-label">Project *</label>
               <select className={`form-control${errors.projectId ? ' error' : ''}`} name="projectId" value={form.projectId} onChange={handleChange}>
                 <option value="">Select project</option>
-                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {(Array.isArray(projects) ? projects : []).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
               {errors.projectId && <div className="form-error">{errors.projectId}</div>}
             </div>
@@ -84,7 +88,7 @@ function TaskModal({ task, projects, users, onClose, onSave }) {
               <label className="form-label">Assign To</label>
               <select className="form-control" name="assignedToId" value={form.assignedToId} onChange={handleChange}>
                 <option value="">Unassigned</option>
-                {users.map(u => <option key={u.id} value={u.id}>{u.fullName}</option>)}
+                {(Array.isArray(users) ? users : []).map(u => <option key={u.id} value={u.id}>{u.fullName}</option>)}
               </select>
             </div>
           </div>
@@ -117,7 +121,7 @@ export default function Tasks() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState(null); // null | 'create' | task object
+  const [modal, setModal] = useState(null);
   const [filterStatus, setFilterStatus] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
   const [search, setSearch] = useState('');
@@ -125,8 +129,12 @@ export default function Tasks() {
   const fetchTasks = useCallback(async () => {
     try {
       const res = await (isAdmin ? getAllTasks() : getMyTasks());
-      setTasks(res.data);
-    } catch (err) { console.error(err); }
+      // ✅ FIX: always ensure array
+      setTasks(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error(err);
+      setTasks([]); // ✅ FIX: reset on error
+    }
   }, [isAdmin]);
 
   useEffect(() => {
@@ -134,9 +142,16 @@ export default function Tasks() {
       setLoading(true);
       await fetchTasks();
       if (isAdmin) {
-        const [projRes, usersRes] = await Promise.all([getAllProjects(), getAllUsers()]);
-        setProjects(projRes.data);
-        setUsers(usersRes.data);
+        try {
+          const [projRes, usersRes] = await Promise.all([getAllProjects(), getAllUsers()]);
+          // ✅ FIX: always ensure array
+          setProjects(Array.isArray(projRes.data) ? projRes.data : []);
+          setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
+        } catch (err) {
+          console.error(err);
+          setProjects([]);
+          setUsers([]);
+        }
       }
       setLoading(false);
     };
@@ -153,7 +168,7 @@ export default function Tasks() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this task?')) return;
     try { await deleteTask(id); setTasks(ts => ts.filter(t => t.id !== id)); }
-    catch (err) { alert('Failed to delete task'); }
+    catch { alert('Failed to delete task'); }
   };
 
   const filtered = tasks.filter(t => {

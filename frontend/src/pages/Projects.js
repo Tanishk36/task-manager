@@ -64,13 +64,18 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(null);
 
-  const fetch = async () => {
-    try { const res = await getAllProjects(); setProjects(res.data); }
-    catch (err) { console.error(err); }
-    finally { setLoading(false); }
+  const fetchProjects = async () => {
+    try {
+      const res = await getAllProjects();
+      // ✅ FIX: always ensure array
+      setProjects(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error(err);
+      setProjects([]); // ✅ FIX: reset on error
+    } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { fetchProjects(); }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this project and all its tasks?')) return;
@@ -108,9 +113,9 @@ export default function Projects() {
               </div>
               {p.description && <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 12 }}>{p.description}</p>}
               <div style={{ display: 'flex', gap: 16, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                <span>📋 {p.taskCount} tasks</span>
-                <span>👤 {p.createdBy?.fullName}</span>
-                <span>🗓 {new Date(p.createdAt).toLocaleDateString()}</span>
+                <span>📋 {p.taskCount ?? 0} tasks</span>
+                <span>👤 {p.createdBy?.fullName ?? '—'}</span>
+                <span>🗓 {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '—'}</span>
               </div>
             </div>
           ))}
@@ -121,7 +126,7 @@ export default function Projects() {
         <ProjectModal
           project={modal === 'create' ? null : modal}
           onClose={() => setModal(null)}
-          onSave={() => { setModal(null); fetch(); }}
+          onSave={() => { setModal(null); fetchProjects(); }}
         />
       )}
     </div>
