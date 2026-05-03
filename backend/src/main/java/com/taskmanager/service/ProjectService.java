@@ -61,11 +61,20 @@ public class ProjectService {
                 .name(project.getName())
                 .description(project.getDescription())
                 .createdAt(project.getCreatedAt())
-                .taskCount(project.getTasks() != null ? project.getTasks().size() : 0)
-                .createdBy(project.getCreatedBy() != null ? UserDto.builder()
-                        .id(project.getCreatedBy().getId())
-                        .fullName(project.getCreatedBy().getFullName())
-                        .build() : null)
+                .createdBy(toUserDto(project.getCreatedBy()))
+                .taskCount(0)
+                .build();
+    }
+
+    // ✅ Added missing helper — was referenced but never defined
+    private UserDto toUserDto(User user) {
+        if (user == null) return null;
+        return UserDto.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .role(user.getRole() != null ? user.getRole().name() : null)
                 .build();
     }
 }
