@@ -1,5 +1,7 @@
 import axios from 'axios';
-const API_URL = "aware-enjoyment-production-0bef.up.railway.app";  // ✅ ACTUAL live URL
+
+const API_URL = "https://aware-enjoyment-production-0bef.up.railway.app"; // ✅ FIXED URL
+
 const api = axios.create({
   baseURL: `${API_URL}/api`,
   headers: { 'Content-Type': 'application/json' },
