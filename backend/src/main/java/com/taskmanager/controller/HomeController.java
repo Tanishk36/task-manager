@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping("")
     public String home() {
         return "Task Manager API is LIVE 🚀";
     }
