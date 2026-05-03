@@ -7,12 +7,16 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"assignedTasks"}) // ✅ prevent recursion
 public class User {
 
     @Id
@@ -32,10 +36,11 @@ public class User {
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     @Column(nullable = false)
+    @JsonIgnore // ✅ NEVER expose password
     private String password;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number must be 10-15 digits, optionally starting with +")
+    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number must be 10-15 digits")
     @Column(nullable = false)
     private String phone;
 
@@ -45,6 +50,7 @@ public class User {
     private Role role = Role.MEMBER;
 
     @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // ✅ prevent recursion
     private List<Task> assignedTasks;
 
     private LocalDateTime createdAt;
