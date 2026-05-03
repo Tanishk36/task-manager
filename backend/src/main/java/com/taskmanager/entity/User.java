@@ -46,12 +46,13 @@ public class User {
     @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> assignedTasks;
 
+    private LocalDateTime createdAt;
+
     public enum Role {
         ADMIN, MEMBER
     }
 
-    public void setCreatedAt(LocalDateTime now) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCreatedAt'");
-    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+}
 }
